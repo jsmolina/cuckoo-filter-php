@@ -1,0 +1,16 @@
+{
+  "name": "jsmolina/cuckoo-filter-php",
+  "description": "Cuckoo Filter implementation",
+  "minimum-stability": "dev",
+  "license": "open",
+  "require": {
+    "phpcheckstyle/phpcheckstyle": "dev-master"
+  },
+  "authors": [
+    {
+      "name": "Jordi",
+      "email": "email@example.com"
+    }
+  ]
+
+}
