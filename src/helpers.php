@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 namespace Cuckoo;
 
+/**
+ * Class VictimCache stores the last victim from 'space conflicts'
+ *
+ * @package Cuckoo
+ */
 class VictimCache
 {
     public $index = 0;

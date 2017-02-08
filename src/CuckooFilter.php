@@ -11,6 +11,7 @@ define('KMAXCUCKOOCOUNT', 500);
 
 /**
  * Class CuckooFilter
+ *
  * @see https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf
  */
 class CuckooFilter
@@ -22,6 +23,7 @@ class CuckooFilter
 
     /**
      * CuckooFilter constructor.
+     *
      * @param int $_bitsPerItem
      * @param int $_maxNumKeys
      */
@@ -43,6 +45,7 @@ class CuckooFilter
     }
 
     /**
+     * Return the smallest power of 2 greater than or equal to the specified number
      *
      * @param float $x
      * @return int
@@ -63,6 +66,7 @@ class CuckooFilter
 
     /**
      * Djb2 algorythm implementation
+     *
      * @param $value
      * @return int
      */
@@ -86,8 +90,9 @@ class CuckooFilter
 
     /**
      * method to obtain the initial index and the tag/fingerprint
+     *
      * @param int $item the item to get the corresponding index and tag
-     * @return int a tuple of (index, tag)
+     * @return array of (index, tag)
      */
     protected function _generateIndexTagHash(int $item): array
     {
@@ -102,6 +107,7 @@ class CuckooFilter
      * Note that the paper describes this operation as: index XOR hash(tag)
      * however on the C++ implementation it's optimized by hardcoding the
      * MurmurHash2 constant as a means of having a very quick hash-like function.
+     *
      * @param int $index
      * @param int $tag
      * @return int
@@ -120,6 +126,13 @@ class CuckooFilter
         return $this->_concreteAdd($index, $tag);
     }
 
+    /**
+     * Strategy pattern for add
+     *
+     * @param int $i
+     * @param int $tag
+     * @return bool
+     */
     public function _concreteAdd(int $i, int $tag): bool
     {
         $curIndex = $i;
@@ -130,7 +143,11 @@ class CuckooFilter
             // first time won't kickout
             $kickout = $count > 0;
             try {
-                $oldTag = $this->_table->insertTagToBucket($curIndex, $curTag, $kickout);
+                $oldTag = $this->_table->insertTagToBucket(
+                    $curIndex,
+                    $curTag,
+                    $kickout
+                );
             } catch (NotEnoughSpaceException $exc) {
                 // catch and next try will go
                 $oldTag = null;
@@ -153,6 +170,12 @@ class CuckooFilter
         return false;
     }
 
+    /**
+     * Checks if item is inside the table
+     *
+     * @param int $item
+     * @return bool
+     */
     public function contain(int $item): bool
     {
         // generate index and 'compress' into a tag
@@ -169,6 +192,12 @@ class CuckooFilter
         return $found or $this->_table->findTagInBuckets($i1, $i2, $tag);
     }
 
+    /**
+     * Deletes an item
+     *
+     * @param int $item The item to delete
+     * @return bool
+     */
     public function delete(int $item): bool
     {
         list($i1, $tag) = $this->_generateIndexTagHash($item);
@@ -183,7 +212,9 @@ class CuckooFilter
             return true;
         }
 
-        if ($this->_table->deleteTagFromBucket($i1, $tag) || $this->_table->deleteTagFromBucket($i2, $tag)) {
+        if ($this->_table->deleteTagFromBucket($i1, $tag) ||
+            $this->_table->deleteTagFromBucket($i2, $tag)
+        ) {
             $this->_numItems--;
             $this->_tryToResurrectLastVictim();
             return true;
@@ -193,7 +224,9 @@ class CuckooFilter
     }
 
     /**
-     * Will try to resurrect the last victim since we deleted an item (so more space is available)
+     * Will try to resurrect the last victim since we deleted an
+     * item (so more space is available)
+     *
      * @return bool
      */
     protected function _tryToResurrectLastVictim(): bool
@@ -205,6 +238,11 @@ class CuckooFilter
         return true;
     }
 
+    /**
+     * Returns load factor for cuckoo
+     *
+     * @return float
+     */
     public function loadFactor(): float
     {
         return (double)1.0 * $this->_numItems / $this->_table->sizeInTags();

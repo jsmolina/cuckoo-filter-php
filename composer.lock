@@ -1,0 +1,62 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "132bdd2425833bef5d84b29fe353c60b",
+    "packages": [
+        {
+            "name": "phpcheckstyle/phpcheckstyle",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPCheckstyle/phpcheckstyle.git",
+                "reference": "4bb075eaf2b23efb367192f184a7bfe163d4762e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPCheckstyle/phpcheckstyle/zipball/4bb075eaf2b23efb367192f184a7bfe163d4762e",
+                "reference": "4bb075eaf2b23efb367192f184a7bfe163d4762e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPCheckstyle\\": "src/"
+                },
+                "files": [
+                    "src/PHPCheckstyle/_Constants.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "OSL-2.1"
+            ],
+            "description": "PHPCheckstyle is an open-source tool that helps PHP programmers adhere to certain coding conventions",
+            "homepage": "https://github.com/phpcheckstyle/phpcheckstyle/",
+            "keywords": [
+                "checkstyle",
+                "convention",
+                "standard"
+            ],
+            "time": "2017-02-07 14:50:34"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "phpcheckstyle/phpcheckstyle": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
