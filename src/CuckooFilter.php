@@ -50,7 +50,7 @@ class CuckooFilter
     protected function _upperpower2(float $x): int
     {
         $x = (int)$x;
-        $x -= 1;
+        $x--;
         $x |= $x >> 1;
         $x |= $x >> 2;
         $x |= $x >> 4;
