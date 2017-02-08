@@ -26,21 +26,21 @@ class Table32Bits implements \Countable
             'mask' => $mask);
     }
 
-    protected function _readTag(int $i, int $j)
+    protected function _readTag(int $i, int $j): int
     {
         $s_and_m = $this->_shiftAndMask($j);
         return ($this->_buckets[$i] & $s_and_m['mask']) >> $s_and_m['shift'];
     }
 
-    protected function _writeTag(int $i, int $j, int $tag)
+    protected function _writeTag(int $i, int $j, int $tag): void
     {
         $s_and_m = $this->_shiftAndMask($j);
         $this->_buckets[$i] |= ($tag << $s_and_m['shift']) & $s_and_m['mask'];
     }
 
-    public function insertTagToBucket(int $i, int $tag, bool $kickout)
+    public function insertTagToBucket(int $i, int $tag, bool $kickout): int
     {
-        $oldtag = null;
+        $oldtag = NOT_FOUND;
 
         for ($j = 0; $j < $this->TAGS_PER_BUCKET; $j++) {
             if ($this->_readTag($i, $j) == 0) {
