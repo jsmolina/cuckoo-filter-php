@@ -3,6 +3,7 @@ declare(strict_types = 1);
 namespace Cuckoo;
 
 require('helpers.php');
+require('exceptions.php');
 
 define('NOT_USED_VICTIM', false);
 define('USED_VICTIM', false);
@@ -43,10 +44,10 @@ class CuckooFilter
 
     /**
      *
-     * @param int $x
+     * @param float $x
      * @return int
      */
-    protected function _upperpower2(int $x): int
+    protected function _upperpower2(float $x): int
     {
         $x = (int)$x;
         $x -= 1;
@@ -65,7 +66,7 @@ class CuckooFilter
      * @param $value
      * @return int
      */
-    protected function _hashDjb2($value): int
+    protected function _hashDjb2(int $value): int
     {
 
         $value = (string)$value;
@@ -76,10 +77,10 @@ class CuckooFilter
         return $result & 0xffffffff;
     }
 
-    protected function _taghash(int $hv)
+    protected function _taghash(int $hv): int
     {
         $tag = $hv & ((1 << $this->_bitsPerItem) - 1);
-        $tag += ($tag == 0);
+        // $tag += ($tag == 0);
         return $tag;
     }
 
@@ -92,9 +93,6 @@ class CuckooFilter
     {
         $hashedKey = $this->_hashDjb2($item);
         return array(($hashedKey >> 8) % count($this->_table), $hashedKey & 0xff);
-        /*return array(
-            'index' => ($hashedKey >> 8) % count($this->_table),
-            'tag' => $hashedKey & 0xff);*/
     }
 
     /**
@@ -131,10 +129,15 @@ class CuckooFilter
         for ($count = 0; $count < KMAXCUCKOOCOUNT; $count++) {
             // first time won't kickout
             $kickout = $count > 0;
+            try {
+                $oldTag = $this->_table->insertTagToBucket($curIndex, $curTag, $kickout);
+            } catch (NotEnoughSpaceException $exc) {
+                // catch and next try will go
+                $oldTag = null;
+            }
 
-            $oldTag = $this->_table->insertTagToBucket($curIndex, $curTag, $kickout);
 
-            if ($oldTag === null) {
+            if ($oldTag === NOT_FOUND) {
                 $this->_numItems++;
                 return true;
             }
@@ -202,7 +205,7 @@ class CuckooFilter
         return true;
     }
 
-    protected function _loadFactor(): double
+    public function loadFactor(): float
     {
         return (double)1.0 * $this->_numItems / $this->_table->sizeInTags();
     }
@@ -214,7 +217,7 @@ class CuckooFilter
 
         $ss .= "\t\t" . ((string)$this->_table) . "\n";
         $ss .= "\t\tKeys stored: " . ((string)$this->_numItems) . "\n";
-        $ss .= "\t\tLoad factor: " . ((string)$this->_loadFactor()) . "\n";
+        $ss .= "\t\tLoad factor: " . ((string)$this->loadFactor()) . "\n";
 
         if ($this->_numItems > 0) {
             $ss .= "\t\tbit/key:   " . $this->_bitsPerItem . "\n";
